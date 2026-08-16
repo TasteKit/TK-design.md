@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tastekit.github.io/TK-design.md/sitemap.xml

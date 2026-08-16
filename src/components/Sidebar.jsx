@@ -8,10 +8,10 @@ import {
   Cpu,
   ArrowRight,
   ExternalLink,
-  Layers
+  UploadCloud
 } from 'lucide-react';
 
-export function Sidebar({ activeTab, setActiveTab, totalSystems, selectedSystem }) {
+export function Sidebar({ activeTab, setActiveTab, totalSystems, selectedSystem, onOpenImportModal }) {
   return (
     <aside className="gd-sidebar">
       <nav className="gd-sidebar-nav">
@@ -60,9 +60,19 @@ export function Sidebar({ activeTab, setActiveTab, totalSystems, selectedSystem 
             </span>
             <span className="gd-sidebar-text">AI Token Extractor</span>
           </button>
+
+          <button
+            className="gd-sidebar-link"
+            onClick={onOpenImportModal}
+          >
+            <span className="gd-sidebar-icon">
+              <UploadCloud size={15} />
+            </span>
+            <span className="gd-sidebar-text">Import Spec</span>
+          </button>
         </div>
 
-        {/* Promo Rails (getdesign.md signature bottom promotions) */}
+        {/* Promo Rails */}
         <div className="gd-sidebar-promos">
           <div className="gd-promo-header">
             <span className="gd-promo-header-title">Vibecoder tools</span>

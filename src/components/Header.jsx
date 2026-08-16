@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Sparkles, Code2, Layers, Cpu, ExternalLink, Sliders, X, ArrowRight, Star, Send, Search } from 'lucide-react';
+import { Sparkles, Code2, Layers, Cpu, ExternalLink, Sliders, X, ArrowRight, Star, Send, Search, UploadCloud } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
-export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExport, onOpenRequestModal }) {
+export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExport, onOpenImportModal }) {
   const [showBanner, setShowBanner] = useState(true);
 
   return (
@@ -43,7 +43,7 @@ export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExpor
             </a>
           </div>
 
-          {/* Center Actions (getdesign.md signature buttons) */}
+          {/* Center Actions */}
           <div className="gd-header-center">
             <button
               className="gd-btn-request"
@@ -73,6 +73,12 @@ export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExpor
 
           {/* Right Actions */}
           <div className="gd-header-right">
+            {/* Import Spec Action */}
+            <button className="gd-btn-export" onClick={onOpenImportModal} title="Import Custom Spec">
+              <UploadCloud size={13} />
+              <span>Import</span>
+            </button>
+
             {/* GitHub Widget */}
             <a
               href="https://github.com/TasteKit/TK-design.md"
@@ -88,19 +94,6 @@ export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExpor
                 <Star size={11} fill="#F5A623" color="#F5A623" />
                 <span className="gd-star-count">1.4k</span>
               </span>
-            </a>
-
-            {/* X / Twitter Icon */}
-            <a
-              href="https://x.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="gd-btn-icon-square"
-              title="Follow TasteKit"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
             </a>
 
             {/* Export Spec CTA */}
