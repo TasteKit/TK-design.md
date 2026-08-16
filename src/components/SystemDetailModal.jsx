@@ -8,13 +8,13 @@ import {
   FileText,
   Code2,
   Eye,
-  Layers,
-  Sparkles,
-  ShieldAlert,
-  ArrowRight,
+  ArrowLeft,
   Sun,
   Moon,
-  ExternalLink
+  ExternalLink,
+  Bookmark,
+  Sparkles,
+  Package
 } from 'lucide-react';
 import { generateDesignMd, generateTailwindConfig, generateCssVariables, generateAgentRules } from '../utils/exporters';
 import { calculateContrast } from '../utils/contrast';
@@ -22,10 +22,11 @@ import { getSystemBrandLogo } from './BrandLogos';
 import confetti from 'canvas-confetti';
 
 export function SystemDetailModal({ system, onClose, onLaunchPlayground }) {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'preview' | 'design-md' | 'tailwind' | 'css' | 'agents'
-  const [isCopied, setIsCopied] = useState(false);
-  const [copiedCmd, setCopiedCmd] = useState(false);
+  const [activeTab, setActiveTab] = useState('live'); // 'live' | 'design-md' | 'tailwind' | 'css' | 'agents'
   const [isLightMode, setIsLightMode] = useState(false);
+  const [isCopiedCmd, setIsCopiedCmd] = useState(false);
+  const [isCopiedCode, setIsCopiedCode] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   if (!system) return null;
 
@@ -35,11 +36,11 @@ export function SystemDetailModal({ system, onClose, onLaunchPlayground }) {
 
   const handleCopyCmd = () => {
     navigator.clipboard.writeText(npxCommand);
-    setCopiedCmd(true);
-    setTimeout(() => setCopiedCmd(false), 2000);
+    setIsCopiedCmd(true);
+    setTimeout(() => setIsCopiedCmd(false), 2000);
   };
 
-  const getActiveCode = () => {
+  const getCodeContent = () => {
     if (activeTab === 'design-md') return { code: generateDesignMd(system), name: 'DESIGN.md', type: 'text/markdown' };
     if (activeTab === 'tailwind') return { code: generateTailwindConfig(system), name: 'tailwind.config.js', type: 'application/javascript' };
     if (activeTab === 'css') return { code: generateCssVariables(system), name: 'variables.css', type: 'text/css' };
@@ -47,35 +48,34 @@ export function SystemDetailModal({ system, onClose, onLaunchPlayground }) {
     return null;
   };
 
-  const currentCode = getActiveCode();
+  const currentCode = getCodeContent();
 
   const handleCopyCode = () => {
     if (currentCode) {
       navigator.clipboard.writeText(currentCode.code);
-      setIsCopied(true);
-      confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
-      setTimeout(() => setIsCopied(false), 2000);
+      setIsCopiedCode(true);
+      confetti({ particleCount: 25, spread: 50, origin: { y: 0.6 } });
+      setTimeout(() => setIsCopiedCode(false), 2000);
     }
   };
 
   const handleDownload = () => {
-    if (currentCode) {
-      const blob = new Blob([currentCode.code], { type: currentCode.type });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = currentCode.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
+    const codeObj = currentCode || { code: generateDesignMd(system), name: 'DESIGN.md', type: 'text/markdown' };
+    const blob = new Blob([codeObj.code], { type: codeObj.type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = codeObj.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const canvasStyle = {
-    '--canvas-bg': isLightMode ? '#f8f9fa' : tokens.bg,
+    '--canvas-bg': isLightMode ? '#fbfbfa' : tokens.bg,
     '--canvas-surface': isLightMode ? '#ffffff' : tokens.surface,
-    '--canvas-surface-hover': isLightMode ? '#f1f3f5' : tokens.surfaceHover,
+    '--canvas-surface-hover': isLightMode ? '#f4f4f3' : tokens.surfaceHover,
     '--canvas-border': isLightMode ? 'rgba(0,0,0,0.1)' : tokens.border,
     '--canvas-border-highlight': tokens.borderHighlight,
     '--canvas-primary': tokens.primary,
@@ -93,251 +93,213 @@ export function SystemDetailModal({ system, onClose, onLaunchPlayground }) {
   };
 
   return (
-    <div className="tk-detail-backdrop" onClick={onClose}>
-      <div className="tk-detail-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className="tk-detail-header">
-          <div className="tk-detail-brand-row">
-            <span className="tk-detail-brand-icon">{getSystemBrandLogo(system.id, 24)}</span>
-            <div>
-              <div className="tk-detail-meta-tags">
-                <span className="tk-detail-cat-badge">{system.category}</span>
-                <span className="tk-detail-vibe-badge">{system.vibe}</span>
-                <span className="tk-detail-wcag-badge">WCAG {contrast.score} ({contrast.ratio}:1)</span>
+    <div className="gd-detail-backdrop" onClick={onClose}>
+      <div className="gd-detail-container" onClick={(e) => e.stopPropagation()}>
+        {/* Top Breadcrumb & Close Bar */}
+        <div className="gd-detail-nav-row">
+          <button className="gd-btn-back" onClick={onClose}>
+            <ArrowLeft size={14} />
+            <span>Back to designs</span>
+          </button>
+          <button className="gd-btn-close" onClick={onClose}>
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Header Title Section */}
+        <div className="gd-detail-header-sec">
+          <div className="gd-detail-heading-row">
+            <h1 className="gd-detail-title">
+              Design System Analysis: <span className="gd-highlight">{system.name}</span>
+            </h1>
+            <span className="gd-detail-logo-tag">
+              {getSystemBrandLogo(system.id, 22)}
+            </span>
+          </div>
+          <p className="gd-detail-tagline">{system.tagline}</p>
+        </div>
+
+        {/* Usage Section (Command + Stats & Action Buttons) */}
+        <div className="gd-detail-usage-sec">
+          <h2 className="gd-sec-heading">Usage</h2>
+
+          <div className="gd-usage-grid">
+            {/* Left: NPX Box */}
+            <div className="gd-usage-left">
+              <div className="gd-npx-box">
+                <div className="gd-npx-row">
+                  <span className="gd-npx-cmd">{npxCommand}</span>
+                  <button className="gd-npx-copy" onClick={handleCopyCmd} title="Copy Command">
+                    {isCopiedCmd ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+                  </button>
+                </div>
+                <p className="gd-npx-hint">
+                  Run this command from your project root, then ask your AI assistant to use <code>DESIGN.md</code> for UI work.
+                </p>
               </div>
-              <h2 className="tk-detail-title">{system.name}</h2>
+
+              <p className="gd-usage-desc">
+                {system.name} takes {system.category.toLowerCase()} as its base, defined by its palette (<code>{tokens.primary}</code> / <code>{tokens.bg}</code>), radius <code>{tokens.radius}</code>, and strict typography rules.
+              </p>
             </div>
-          </div>
 
-          <div className="tk-detail-head-actions">
-            <button
-              className="tk-btn-launch-canvas"
-              onClick={() => {
-                onClose();
-                onLaunchPlayground(system);
-              }}
-            >
-              <Eye size={14} />
-              <span>Full Playground</span>
-            </button>
-            <button className="tk-detail-close" onClick={onClose}>
-              <X size={18} />
-            </button>
-          </div>
-        </div>
-
-        {/* NPX CLI Hero Box */}
-        <div className="tk-detail-cli-strip">
-          <div className="tk-cli-code-row">
-            <Terminal size={14} className="tk-cli-icon" />
-            <code className="tk-cli-code">{npxCommand}</code>
-            <button className="tk-cli-copy-btn" onClick={handleCopyCmd} title="Copy CLI Command">
-              {copiedCmd ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-              <span>{copiedCmd ? 'Copied' : 'Copy'}</span>
-            </button>
-          </div>
-          <p className="tk-cli-hint">
-            Run in your project root to drop <code>DESIGN.md</code> into your codebase for AI coding agents.
-          </p>
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="tk-detail-tabs">
-          <button
-            className={`tk-detail-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
-            onClick={() => setActiveTab('overview')}
-          >
-            <Sparkles size={14} />
-            <span>Design Breakdown</span>
-          </button>
-
-          <button
-            className={`tk-detail-tab-btn ${activeTab === 'preview' ? 'active' : ''}`}
-            onClick={() => setActiveTab('preview')}
-          >
-            <Eye size={14} />
-            <span>Live Mock Canvas</span>
-          </button>
-
-          <button
-            className={`tk-detail-tab-btn ${activeTab === 'design-md' ? 'active' : ''}`}
-            onClick={() => setActiveTab('design-md')}
-          >
-            <FileText size={14} />
-            <span>DESIGN.md (AI Spec)</span>
-          </button>
-
-          <button
-            className={`tk-detail-tab-btn ${activeTab === 'tailwind' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tailwind')}
-          >
-            <Code2 size={14} />
-            <span>Tailwind Config</span>
-          </button>
-
-          <button
-            className={`tk-detail-tab-btn ${activeTab === 'css' ? 'active' : ''}`}
-            onClick={() => setActiveTab('css')}
-          >
-            <Code2 size={14} />
-            <span>CSS Variables</span>
-          </button>
-
-          <button
-            className={`tk-detail-tab-btn ${activeTab === 'agents' ? 'active' : ''}`}
-            onClick={() => setActiveTab('agents')}
-          >
-            <Terminal size={14} />
-            <span>Agent Guardrails</span>
-          </button>
-        </div>
-
-        {/* Content Body */}
-        <div className="tk-detail-body">
-          {activeTab === 'overview' && (
-            <div className="tk-overview-view">
-              <p className="tk-overview-desc">{system.tagline}</p>
-
-              {/* Color Swatches Grid */}
-              <div className="tk-overview-sec">
-                <h4 className="tk-overview-sec-title">Semantic Palette & Layer Tokens</h4>
-                <div className="tk-overview-swatches-grid">
-                  <div className="tk-overview-swatch" style={{ background: tokens.bg, color: tokens.text }}>
-                    <span>Background Substrate</span>
-                    <code>{tokens.bg}</code>
-                  </div>
-                  <div className="tk-overview-swatch" style={{ background: tokens.surface, color: tokens.text }}>
-                    <span>Surface Container</span>
-                    <code>{tokens.surface}</code>
-                  </div>
-                  <div className="tk-overview-swatch" style={{ background: tokens.primary, color: tokens.primaryForeground }}>
-                    <span>Primary Action</span>
-                    <code>{tokens.primary}</code>
-                  </div>
-                  <div className="tk-overview-swatch" style={{ background: tokens.accent, color: '#fff' }}>
-                    <span>Accent Spark</span>
-                    <code>{tokens.accent}</code>
-                  </div>
+            {/* Right: Stats & Action Buttons */}
+            <div className="gd-usage-right">
+              {/* Stat Counters */}
+              <div className="gd-stats-row">
+                <div className="gd-stat-box">
+                  <span className="lbl">Installs</span>
+                  <span className="val">{system.downloads}</span>
+                </div>
+                <div className="gd-stat-box">
+                  <span className="lbl">Bookmarked</span>
+                  <span className="val">{system.stars}</span>
                 </div>
               </div>
 
-              {/* Specs & Metrics */}
-              <div className="tk-overview-metrics-grid">
-                <div className="tk-overview-metric">
-                  <span className="lbl">Base Radius</span>
-                  <span className="val">{tokens.radius}</span>
-                </div>
-                <div className="tk-overview-metric">
-                  <span className="lbl">Heading Typeface</span>
-                  <span className="val">{tokens.fontHeading.split(',')[0].replace(/['"]/g, '')}</span>
-                </div>
-                <div className="tk-overview-metric">
-                  <span className="lbl">Monospace Font</span>
-                  <span className="val">{tokens.fontMono.split(',')[0].replace(/['"]/g, '')}</span>
-                </div>
-                <div className="tk-overview-metric">
-                  <span className="lbl">Text Contrast</span>
-                  <span className="val" style={{ color: '#10b981' }}>{contrast.ratio}:1 (WCAG {contrast.score})</span>
-                </div>
-              </div>
-
-              {/* Strict Negative Guardrails */}
-              <div className="tk-overview-sec">
-                <h4 className="tk-overview-sec-title">Agent Anti-Pattern Guardrails</h4>
-                <div className="tk-overview-guardrails">
-                  {system.antiPatterns.map((rule, idx) => (
-                    <div key={idx} className="tk-guardrail-item">
-                      <ShieldAlert size={14} className="tk-guard-icon" />
-                      <span>{rule}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'preview' && (
-            <div className="tk-detail-preview-view">
-              <div className="tk-detail-preview-bar">
-                <span className="tk-prev-bar-lbl">Live Canvas Simulation</span>
+              {/* Action Buttons */}
+              <div className="gd-actions-row">
                 <button
-                  className="tk-theme-toggle small"
-                  onClick={() => setIsLightMode(!isLightMode)}
+                  className={`gd-btn-save ${isSaved ? 'saved' : ''}`}
+                  onClick={() => setIsSaved(!isSaved)}
                 >
-                  {isLightMode ? <Sun size={13} /> : <Moon size={13} />}
-                  <span>{isLightMode ? 'Light' : 'Dark'}</span>
+                  <Bookmark size={14} fill={isSaved ? '#f5a623' : 'none'} color={isSaved ? '#f5a623' : 'currentColor'} />
+                  <span>{isSaved ? 'SAVED' : 'SAVE'}</span>
                 </button>
-              </div>
 
-              <div className="tk-detail-canvas-frame" style={canvasStyle}>
-                <div className="tk-sim-hero">
-                  <div className="tk-sim-hero-pill">
-                    <span>{system.vibe}</span>
-                  </div>
-                  <h3 className="tk-sim-hero-title">{system.name} Interface</h3>
-                  <p className="tk-sim-hero-subtitle">
-                    Components automatically inherit background: <code>{tokens.bg}</code>, primary: <code>{tokens.primary}</code>, and radius: <code>{tokens.radius}</code>.
-                  </p>
-                  <div className="tk-sim-hero-cta-row">
-                    <button className="tk-sim-btn-primary">Primary Action</button>
-                    <button className="tk-sim-btn-secondary">Secondary Outline</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {currentCode && (
-            <div className="tk-detail-code-view">
-              <pre className="tk-detail-pre">
-                <code>{currentCode.code}</code>
-              </pre>
-            </div>
-          )}
-        </div>
-
-        {/* Modal Footer */}
-        <div className="tk-detail-footer">
-          {currentCode ? (
-            <div className="tk-detail-footer-inner">
-              <span className="tk-footer-code-hint">
-                Exporting <code>{currentCode.name}</code> for {system.name}
-              </span>
-              <div className="tk-footer-code-actions">
-                <button className="tk-btn-footer-copy" onClick={handleCopyCode}>
-                  {isCopied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-                  <span>{isCopied ? 'Copied!' : 'Copy Code'}</span>
-                </button>
-                <button className="tk-btn-footer-download" onClick={handleDownload}>
+                <button className="gd-btn-download" onClick={handleDownload}>
                   <Download size={14} />
-                  <span>Download {currentCode.name}</span>
+                  <span>Download DESIGN.md</span>
                 </button>
               </div>
-            </div>
-          ) : (
-            <div className="tk-detail-footer-inner">
-              <span className="tk-footer-code-hint">
-                TasteKit Standard v2.4 • Verified Human & AI Specification
-              </span>
+
+              {/* Full Starter Kit Button */}
               <button
-                className="tk-btn-footer-download"
+                className="gd-btn-starter"
                 onClick={() => {
-                  const md = generateDesignMd(system);
-                  const blob = new Blob([md], { type: 'text/markdown' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = 'DESIGN.md';
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
+                  onClose();
+                  onLaunchPlayground(system);
                 }}
               >
-                <Download size={14} />
-                <span>Download DESIGN.md</span>
+                <Package size={15} />
+                <span>Open in Live Playground</span>
+                <span className="gd-arr">→</span>
               </button>
+
+              <div className="gd-disclaimer">
+                <span>✦</span>
+                <p>Independent analysis of publicly observable patterns, curated for inspiration and AI coding agents.</p>
+              </div>
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* Preview Section */}
+        <div className="gd-detail-preview-sec">
+          <div className="gd-preview-toolbar">
+            <h2 className="gd-sec-heading">Preview</h2>
+
+            <div className="gd-preview-controls">
+              {/* View Tabs */}
+              <div className="gd-preview-tabs">
+                <button
+                  className={`gd-prev-tab ${activeTab === 'live' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('live')}
+                >
+                  <Eye size={12} />
+                  <span>Live Preview</span>
+                </button>
+                <button
+                  className={`gd-prev-tab ${activeTab === 'design-md' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('design-md')}
+                >
+                  <FileText size={12} />
+                  <span>DESIGN.md</span>
+                </button>
+                <button
+                  className={`gd-prev-tab ${activeTab === 'tailwind' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('tailwind')}
+                >
+                  <Code2 size={12} />
+                  <span>Tailwind</span>
+                </button>
+                <button
+                  className={`gd-prev-tab ${activeTab === 'css' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('css')}
+                >
+                  <Code2 size={12} />
+                  <span>CSS</span>
+                </button>
+              </div>
+
+              {/* Light / Dark Mode Toggle */}
+              {activeTab === 'live' && (
+                <div className="gd-theme-toggle-group">
+                  <button
+                    className={`gd-theme-btn ${!isLightMode ? 'active' : ''}`}
+                    onClick={() => setIsLightMode(false)}
+                  >
+                    <Moon size={12} />
+                    <span>Dark</span>
+                  </button>
+                  <button
+                    className={`gd-theme-btn ${isLightMode ? 'active' : ''}`}
+                    onClick={() => setIsLightMode(true)}
+                  >
+                    <Sun size={12} />
+                    <span>Light</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Canvas or Code Box */}
+          <div className="gd-preview-content-box">
+            {activeTab === 'live' && (
+              <div className="gd-live-canvas-frame" style={canvasStyle}>
+                <div className="gd-sim-navbar">
+                  <div className="gd-sim-nav-brand">
+                    <span className="gd-sim-nav-logo">{getSystemBrandLogo(system.id, 16)}</span>
+                    <span className="gd-sim-nav-name">{system.name}</span>
+                  </div>
+                  <div className="gd-sim-nav-links">
+                    <span>Products</span>
+                    <span>Developers</span>
+                    <span>Company</span>
+                  </div>
+                  <button className="gd-sim-nav-btn">Get Started</button>
+                </div>
+
+                <div className="gd-sim-hero-block">
+                  <span className="gd-sim-badge">{system.vibe}</span>
+                  <h3 className="gd-sim-title">Engineered with {system.name} Precision</h3>
+                  <p className="gd-sim-desc">
+                    Machine-verified tokens with WCAG {contrast.score} ({contrast.ratio}:1) contrast compliance.
+                  </p>
+                  <div className="gd-sim-cta-row">
+                    <button className="gd-sim-cta-primary">Primary Action</button>
+                    <button className="gd-sim-cta-secondary">Documentation</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {currentCode && (
+              <div className="gd-code-box">
+                <div className="gd-code-header">
+                  <span>{currentCode.name}</span>
+                  <button className="gd-btn-code-copy" onClick={handleCopyCode}>
+                    {isCopiedCode ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+                    <span>{isCopiedCode ? 'Copied' : 'Copy Code'}</span>
+                  </button>
+                </div>
+                <pre className="gd-code-pre">
+                  <code>{currentCode.code}</code>
+                </pre>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

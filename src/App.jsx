@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
+import { Hero } from './components/Hero';
 import { Catalog } from './components/Catalog';
 import { Playground } from './components/Playground';
 import { Studio } from './components/Studio';
@@ -43,18 +44,17 @@ export function App() {
   };
 
   return (
-    <div className="tk-app">
+    <div className="gd-app">
       {/* Top Header & Announcement Banner */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        selectedSystem={selectedSystem}
         totalSystems={systems.length}
         onOpenExport={() => setIsExportOpen(true)}
       />
 
-      {/* Main Body Grid: Sidebar + Main Content */}
-      <div className="tk-layout-grid">
+      {/* Main Split Grid (Sidebar 248px + Content minmax) */}
+      <div className="gd-layout-container">
         <Sidebar
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -62,87 +62,109 @@ export function App() {
           selectedSystem={selectedSystem}
         />
 
-        <main className="tk-main-container">
+        <main className="gd-main-content">
           {activeTab === 'catalog' && (
-            <Catalog
-              systems={systems}
-              selectedSystem={selectedSystem}
-              onSelectSystem={handleSelectSystem}
-              onLaunchPlayground={handleLaunchPlayground}
-              onOpenExport={() => setIsExportOpen(true)}
-              onOpenDetailModal={handleOpenDetailModal}
-            />
+            <>
+              <Hero onBrowseCatalog={() => setActiveTab('catalog')} />
+              <Catalog
+                systems={systems}
+                selectedSystem={selectedSystem}
+                onSelectSystem={handleSelectSystem}
+                onLaunchPlayground={handleLaunchPlayground}
+                onOpenDetailModal={handleOpenDetailModal}
+              />
+            </>
           )}
 
           {activeTab === 'playground' && (
-            <Playground
-              system={selectedSystem}
-              systems={systems}
-              onSelectSystem={handleSelectSystem}
-              onOpenExport={() => setIsExportOpen(true)}
-            />
+            <div className="gd-page-wrapper">
+              <Playground
+                system={selectedSystem}
+                systems={systems}
+                onSelectSystem={handleSelectSystem}
+                onOpenExport={() => setIsExportOpen(true)}
+              />
+            </div>
           )}
 
           {activeTab === 'studio' && (
-            <Studio
-              currentSystem={selectedSystem}
-              onSaveCustomSystem={handleSaveCustomSystem}
-              onOpenExport={() => setIsExportOpen(true)}
-            />
+            <div className="gd-page-wrapper">
+              <Studio
+                currentSystem={selectedSystem}
+                onSaveCustomSystem={handleSaveCustomSystem}
+                onOpenExport={() => setIsExportOpen(true)}
+              />
+            </div>
           )}
 
           {activeTab === 'analyzer' && (
-            <UrlAnalyzer
-              onGenerateFromUrl={handleGenerateFromUrl}
-            />
+            <div className="gd-page-wrapper">
+              <UrlAnalyzer
+                onGenerateFromUrl={handleGenerateFromUrl}
+              />
+            </div>
           )}
         </main>
       </div>
 
-      {/* Footer */}
-      <footer className="tk-footer">
-        <div className="tk-footer-inner">
-          <div className="tk-footer-brand">
-            <div className="tk-footer-logo-row">
-              <img src="/tastekit-logo.jpg" alt="TasteKit" className="tk-footer-logo" />
-              <span className="tk-footer-name">TasteKit</span>
-              <span className="tk-footer-sub">TK-design.md</span>
-            </div>
-            <p className="tk-footer-desc">
-              Independent design systems analysis and interactive spec engine for AI coding agents.
-              Eliminating the AI taste gap with {systems.length}+ open-source specs.
+      {/* Footer matching getdesign.md */}
+      <footer className="gd-footer">
+        <div className="gd-footer-inner">
+          <div className="gd-footer-col brand">
+            <a href="/" className="gd-footer-logo">
+              taste<span className="gd-accent">kit</span>.md
+            </a>
+            <p className="gd-footer-tagline">
+              Design, build, launch and grow products with the AI you already use.
             </p>
+            <a
+              href="https://github.com/TasteKit"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gd-footer-team"
+            >
+              <img src="/tastekit-logo.jpg" alt="" className="gd-team-avatar" />
+              <span>Maintained by the TasteKit team</span>
+            </a>
           </div>
 
-          <div className="tk-footer-links">
-            <div className="tk-footer-col">
-              <span className="tk-footer-col-title">Ecosystem</span>
-              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                TK-design.md ({systems.length} Specs)
-              </a>
-              <button onClick={() => setActiveTab('catalog')}>Catalog</button>
+          <div className="gd-footer-col">
+            <span className="gd-footer-title">Products</span>
+            <div className="gd-footer-links">
+              <button onClick={() => setActiveTab('catalog')}>Website catalog ({systems.length}+)</button>
+              <button onClick={() => setActiveTab('studio')}>Private DESIGN.md</button>
               <button onClick={() => setActiveTab('playground')}>Live Playground</button>
-              <button onClick={() => setActiveTab('studio')}>Studio Builder</button>
+              <button onClick={() => setActiveTab('analyzer')}>AI Token Extractor</button>
+              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
+                Website Starter Kit ↗
+              </a>
             </div>
+          </div>
 
-            <div className="tk-footer-col">
-              <span className="tk-footer-col-title">Open Source</span>
-              <a href="https://github.com/TasteKit" target="_blank" rel="noopener noreferrer">
-                TasteKit Org
+          <div className="gd-footer-col">
+            <span className="gd-footer-title">Resources</span>
+            <div className="gd-footer-links">
+              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
+                State of DESIGN.md
               </a>
               <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                Contribute Spec
+                Google Stitch Spec
               </a>
+              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
+                GitHub Repository
+              </a>
+            </div>
+          </div>
+
+          <div className="gd-footer-col">
+            <span className="gd-footer-title">Legal</span>
+            <div className="gd-footer-links">
               <a href="https://github.com/TasteKit/TK-design.md/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">
                 MIT License
               </a>
+              <span>© 2026 TasteKit. All rights reserved.</span>
             </div>
           </div>
-        </div>
-
-        <div className="tk-footer-bottom">
-          <span>Crafted with TasteKit for Antigravity, Claude Code, Cursor, and Codex.</span>
-          <span>© 2026 TasteKit. All rights reserved.</span>
         </div>
       </footer>
 
@@ -155,7 +177,7 @@ export function App() {
         />
       )}
 
-      {/* Export Modal */}
+      {/* Multi-Format Export Modal */}
       {isExportOpen && (
         <ExportModal
           system={selectedSystem}

@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
 import {
   Search,
-  Sparkles,
   ArrowRight,
   Download,
-  Check,
   Star,
   ShieldAlert,
   Eye,
   LayoutGrid,
   List,
-  SlidersHorizontal,
   ExternalLink,
-  Terminal,
-  FileCode2
+  ChevronDown
 } from 'lucide-react';
 import { CATEGORIES } from '../data/designSystems';
 import { getSystemBrandLogo } from './BrandLogos';
@@ -23,12 +19,11 @@ export function Catalog({
   selectedSystem,
   onSelectSystem,
   onLaunchPlayground,
-  onOpenExport,
   onOpenDetailModal
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
+  const [viewMode, setViewMode] = useState('table'); // Default to getdesign.md table view
 
   const filteredSystems = systems.filter((sys) => {
     const matchesCategory = activeCategory === 'All' || sys.category === activeCategory;
@@ -41,83 +36,33 @@ export function Catalog({
   });
 
   return (
-    <div className="tk-catalog-section">
-      {/* Brand Strip Bar */}
-      <div className="tk-brand-strip">
-        <span className="tk-brand-strip-label">75+ Brands & Specs:</span>
-        <div className="tk-brand-strip-logos">
-          {systems.slice(0, 10).map((sys) => (
-            <div
-              key={sys.id}
-              className="tk-brand-pill"
-              onClick={() => onOpenDetailModal(sys)}
-              title={`Inspect ${sys.name} Spec`}
-            >
-              <span className="tk-brand-pill-icon">{getSystemBrandLogo(sys.id, 14)}</span>
-              <span>{sys.name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Hero Header */}
-      <div className="tk-hero-card">
-        <div className="tk-hero-content">
-          <div className="tk-hero-badge">
-            <span className="tk-hero-dot"></span>
-            TasteKit Spec Ecosystem v2.4 • Eliminating The AI Taste Gap
-          </div>
-          <h1 className="tk-hero-headline">
-            Give AI-built websites a real design with <span className="tk-gradient-text">DESIGN.md</span>
-          </h1>
-          <p className="tk-hero-desc">
-            Give your coding agent a reusable design reference: colors, type, spacing, components, and the reasoning behind them.
-            So every new page follows a specific visual language, not the same generic AI layout.
-          </p>
-
-          <div className="tk-hero-stats">
-            <div className="tk-hero-stat-item">
-              <span className="tk-hero-stat-num">{systems.length}</span>
-              <span className="tk-hero-stat-label">Production Specs</span>
-            </div>
-            <div className="tk-hero-stat-divider"></div>
-            <div className="tk-hero-stat-item">
-              <span className="tk-hero-stat-num">100%</span>
-              <span className="tk-hero-stat-label">AI Agent Ready</span>
-            </div>
-            <div className="tk-hero-stat-divider"></div>
-            <div className="tk-hero-stat-item">
-              <span className="tk-hero-stat-num">0%</span>
-              <span className="tk-hero-stat-label">Generic AI Slop</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Controls & Filter Bar */}
-      <div className="tk-controls-bar">
-        <div className="tk-search-wrapper">
-          <Search size={16} className="tk-search-icon" />
+    <div className="gd-catalog-section">
+      {/* Search Bar matching getdesign.md */}
+      <div className="gd-search-container">
+        <div className="gd-search-box">
+          <Search size={14} className="gd-search-icon" />
           <input
-            type="text"
-            placeholder="Search 75+ designs by brand, keyword, or aesthetic (e.g. Linear, Stripe, Apple, Dark Obsidian)..."
+            type="search"
+            autoComplete="off"
+            placeholder="Search all designs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="tk-search-input"
+            className="gd-search-input"
           />
           {searchQuery && (
-            <button className="tk-search-clear" onClick={() => setSearchQuery('')}>
+            <button className="gd-search-clear" onClick={() => setSearchQuery('')}>
               ✕
             </button>
           )}
         </div>
 
-        <div className="tk-filter-row">
-          <div className="tk-categories-pills">
+        {/* Category Pills & View Switcher */}
+        <div className="gd-controls-row">
+          <div className="gd-categories-scroll">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                className={`tk-cat-pill ${activeCategory === cat ? 'active' : ''}`}
+                className={`gd-cat-chip ${activeCategory === cat ? 'active' : ''}`}
                 onClick={() => setActiveCategory(cat)}
               >
                 {cat}
@@ -125,198 +70,144 @@ export function Catalog({
             ))}
           </div>
 
-          <div className="tk-view-toggle">
+          <div className="gd-view-toggle">
             <button
-              className={`tk-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              className={`gd-view-btn ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode('table')}
+              title="Table View"
+            >
+              <List size={13} />
+            </button>
+            <button
+              className={`gd-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
               title="Grid View"
             >
-              <LayoutGrid size={14} />
-            </button>
-            <button
-              className={`tk-view-btn ${viewMode === 'table' ? 'active' : ''}`}
-              onClick={() => setViewMode('table')}
-              title="Dense Table View"
-            >
-              <List size={14} />
+              <LayoutGrid size={13} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Grid View */}
-      {viewMode === 'grid' && (
-        <div className="tk-systems-grid">
-          {filteredSystems.map((sys) => {
-            const isSelected = selectedSystem?.id === sys.id;
-            return (
+      {/* Table View (Matching getdesign.md design-md catalog) */}
+      {viewMode === 'table' && (
+        <div className="gd-table-container">
+          <div className="gd-table-head">
+            <span className="gd-th-num">#</span>
+            <span className="gd-th-brand">Design Systems Analysis</span>
+            <span className="gd-th-category">Category</span>
+            <span className="gd-th-palette">Palette</span>
+            <span className="gd-th-installs">Installs</span>
+            <span className="gd-th-bookmarked">Bookmarked</span>
+            <span className="gd-th-action">Action</span>
+          </div>
+
+          <div className="gd-table-body">
+            {filteredSystems.map((sys, idx) => (
               <div
                 key={sys.id}
-                className={`tk-system-card ${isSelected ? 'selected' : ''}`}
+                className="gd-table-row"
                 onClick={() => onOpenDetailModal(sys)}
               >
-                {/* Card Top Header */}
-                <div className="tk-card-header">
-                  <div className="tk-card-title-group">
-                    <div className="tk-card-meta-row">
-                      <span className="tk-card-logo-badge">
-                        {getSystemBrandLogo(sys.id, 16)}
-                      </span>
-                      <span className="tk-card-category">{sys.category}</span>
-                      {sys.badge && <span className="tk-card-badge">{sys.badge}</span>}
-                    </div>
-                    <h3 className="tk-card-title">{sys.name}</h3>
-                  </div>
+                {/* Number */}
+                <span className="gd-td-num">{idx + 1}</span>
 
-                  <div className="tk-card-author-tag">
-                    <span>{sys.author}</span>
-                  </div>
-                </div>
-
-                {/* Tagline */}
-                <p className="tk-card-tagline">{sys.tagline}</p>
-
-                {/* Color Swatches Palette */}
-                <div className="tk-card-swatches">
-                  <div className="tk-swatch-item" style={{ background: sys.tokens.bg }} title={`Background: ${sys.tokens.bg}`}>
-                    <span className="tk-swatch-label">BG</span>
-                  </div>
-                  <div className="tk-swatch-item" style={{ background: sys.tokens.surface }} title={`Surface: ${sys.tokens.surface}`}>
-                    <span className="tk-swatch-label">SURF</span>
-                  </div>
-                  <div className="tk-swatch-item" style={{ background: sys.tokens.primary }} title={`Primary: ${sys.tokens.primary}`}>
-                    <span className="tk-swatch-label" style={{ color: sys.tokens.primaryForeground }}>PRI</span>
-                  </div>
-                  <div className="tk-swatch-item" style={{ background: sys.tokens.accent }} title={`Accent: ${sys.tokens.accent}`}>
-                    <span className="tk-swatch-label">ACC</span>
-                  </div>
-                  <div className="tk-swatch-item" style={{ background: sys.tokens.text }} title={`Text: ${sys.tokens.text}`}>
-                    <span className="tk-swatch-label" style={{ color: sys.tokens.bg }}>TXT</span>
-                  </div>
-                </div>
-
-                {/* Specs Row */}
-                <div className="tk-card-specs-row">
-                  <div className="tk-card-spec">
-                    <span className="tk-spec-lbl">Radius</span>
-                    <span className="tk-spec-val">{sys.tokens.radius}</span>
-                  </div>
-                  <div className="tk-card-spec">
-                    <span className="tk-spec-lbl">Typeface</span>
-                    <span className="tk-spec-val">{sys.tokens.fontHeading.split(',')[0].replace(/['"]/g, '')}</span>
-                  </div>
-                  <div className="tk-card-spec">
-                    <span className="tk-spec-lbl">Agent Ready</span>
-                    <span className="tk-spec-val" style={{ color: '#10b981' }}>✓ Verified</span>
-                  </div>
-                </div>
-
-                {/* Anti-Patterns Snippet */}
-                <div className="tk-card-guardrail">
-                  <ShieldAlert size={13} className="tk-guard-icon" />
-                  <span className="tk-guard-text">
-                    Rule: {sys.antiPatterns[0]}
+                {/* Brand Logo & Name */}
+                <div className="gd-td-brand">
+                  <span className="gd-brand-logo-frame">
+                    {getSystemBrandLogo(sys.id, 18)}
                   </span>
+                  <div className="gd-brand-info">
+                    <span className="gd-brand-name">{sys.name}</span>
+                    <span className="gd-brand-tagline">{sys.tagline}</span>
+                  </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="tk-card-actions">
-                  <button
-                    className="tk-btn-launch-play"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onLaunchPlayground(sys);
-                    }}
-                  >
-                    <Eye size={14} />
-                    <span>Live Playground</span>
-                  </button>
+                {/* Category */}
+                <div className="gd-td-category">
+                  <span className="gd-cat-badge">{sys.category}</span>
+                </div>
 
+                {/* Palette Swatches */}
+                <div className="gd-td-palette">
+                  <span className="gd-swatch" style={{ background: sys.tokens.bg }}></span>
+                  <span className="gd-swatch" style={{ background: sys.tokens.surface }}></span>
+                  <span className="gd-swatch" style={{ background: sys.tokens.primary }}></span>
+                  <span className="gd-swatch" style={{ background: sys.tokens.accent }}></span>
+                </div>
+
+                {/* Installs */}
+                <span className="gd-td-installs">{sys.downloads}</span>
+
+                {/* Bookmarked */}
+                <span className="gd-td-bookmarked">{sys.stars}</span>
+
+                {/* Action Trigger */}
+                <div className="gd-td-action">
                   <button
-                    className="tk-btn-card-export"
+                    className="gd-row-btn"
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenDetailModal(sys);
                     }}
-                    title="Deep-Dive Spec Analysis"
                   >
-                    <FileCode2 size={15} />
+                    <span>View Spec</span>
+                    <ArrowRight size={11} />
                   </button>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Table / Dense Minimalist View */}
-      {viewMode === 'table' && (
-        <div className="tk-dense-table-wrapper">
-          <table className="tk-dense-table">
-            <thead>
-              <tr>
-                <th>Brand / System</th>
-                <th>Category</th>
-                <th>Palette Swatches</th>
-                <th>Radius</th>
-                <th>Typeface</th>
-                <th>Anti-Pattern Rule</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSystems.map((sys) => (
-                <tr key={sys.id} onClick={() => onOpenDetailModal(sys)}>
-                  <td className="tk-table-brand-cell">
-                    <span className="tk-table-brand-icon">{getSystemBrandLogo(sys.id, 16)}</span>
-                    <div>
-                      <div className="tk-table-brand-name">{sys.name}</div>
-                      <div className="tk-table-brand-vibe">{sys.vibe}</div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="tk-table-category-tag">{sys.category}</span>
-                  </td>
-                  <td>
-                    <div className="tk-table-swatches">
-                      <span className="tk-table-swatch" style={{ background: sys.tokens.bg }}></span>
-                      <span className="tk-table-swatch" style={{ background: sys.tokens.surface }}></span>
-                      <span className="tk-table-swatch" style={{ background: sys.tokens.primary }}></span>
-                      <span className="tk-table-swatch" style={{ background: sys.tokens.accent }}></span>
-                    </div>
-                  </td>
-                  <td>
-                    <code className="tk-table-mono">{sys.tokens.radius}</code>
-                  </td>
-                  <td>
-                    <span className="tk-table-font">{sys.tokens.fontHeading.split(',')[0].replace(/['"]/g, '')}</span>
-                  </td>
-                  <td>
-                    <span className="tk-table-rule">{sys.antiPatterns[0]}</span>
-                  </td>
-                  <td className="text-right">
-                    <button
-                      className="tk-btn-table-test"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onLaunchPlayground(sys);
-                      }}
-                    >
-                      <span>Playground</span>
-                      <ArrowRight size={13} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Grid View (Alternative Visual Cards) */}
+      {viewMode === 'grid' && (
+        <div className="gd-grid-container">
+          {filteredSystems.map((sys) => (
+            <div
+              key={sys.id}
+              className="gd-grid-card"
+              onClick={() => onOpenDetailModal(sys)}
+            >
+              <div className="gd-card-top">
+                <div className="gd-card-brand-box">
+                  <span className="gd-card-icon">{getSystemBrandLogo(sys.id, 18)}</span>
+                  <span className="gd-card-name">{sys.name}</span>
+                </div>
+                <span className="gd-card-category">{sys.category}</span>
+              </div>
+
+              <p className="gd-card-desc">{sys.tagline}</p>
+
+              <div className="gd-card-swatches">
+                <span style={{ background: sys.tokens.bg }}></span>
+                <span style={{ background: sys.tokens.surface }}></span>
+                <span style={{ background: sys.tokens.primary }}></span>
+                <span style={{ background: sys.tokens.accent }}></span>
+              </div>
+
+              <div className="gd-card-footer">
+                <span className="gd-card-stat">★ {sys.stars}</span>
+                <button
+                  className="gd-card-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenDetailModal(sys);
+                  }}
+                >
+                  Inspect DESIGN.md
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
       {filteredSystems.length === 0 && (
-        <div className="tk-empty-state">
+        <div className="gd-empty-state">
           <p>No design systems found matching "{searchQuery}".</p>
-          <button className="tk-btn-reset-filter" onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}>
+          <button className="gd-btn-reset" onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}>
             Reset Filters
           </button>
         </div>
