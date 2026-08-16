@@ -12,6 +12,8 @@ export function ExportModal({ system, onClose }) {
   const [activeTab, setActiveTab] = useState('design-md');
   const [isCopied, setIsCopied] = useState(false);
 
+  if (!system) return null;
+
   let codeContent = '';
   let filename = '';
   let fileType = 'text/plain';
@@ -38,8 +40,8 @@ export function ExportModal({ system, onClose }) {
     navigator.clipboard.writeText(codeContent);
     setIsCopied(true);
     confetti({
-      particleCount: 40,
-      spread: 60,
+      particleCount: 35,
+      spread: 50,
       origin: { y: 0.6 }
     });
     setTimeout(() => setIsCopied(false), 2000);
@@ -58,76 +60,121 @@ export function ExportModal({ system, onClose }) {
   };
 
   return (
-    <div className="tk-modal-backdrop" onClick={onClose}>
-      <div className="tk-modal-container" onClick={(e) => e.stopPropagation()}>
+    <div className="tk-modal-overlay" onClick={onClose}>
+      <div className="tk-modal-sheet" style={{ maxWidth: '840px' }} onClick={(e) => e.stopPropagation()}>
         {/* Modal Top Header */}
-        <div className="tk-modal-header">
-          <div className="tk-modal-title-group">
-            <h3 className="tk-modal-title">Export Spec & Tokens</h3>
-            <span className="tk-modal-system-pill">{system.name}</span>
-          </div>
+        <div className="tk-modal-header-block" style={{ paddingBottom: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Code2 size={20} color="#f5a623" />
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>
+                  Export Spec & Tokens
+                </h3>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  Target System: <strong style={{ color: 'var(--accent-amber)' }}>{system.name}</strong>
+                </span>
+              </div>
+            </div>
 
-          <button className="tk-modal-close" onClick={onClose}>
-            <X size={18} />
-          </button>
+            <button className="tk-btn-close-sheet" onClick={onClose}>
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Modal Subnav Tabs */}
-        <div className="tk-modal-tabs">
+        <div className="tk-inspector-tabs" style={{ marginBottom: '16px' }}>
           <button
-            className={`tk-modal-tab-btn ${activeTab === 'design-md' ? 'active' : ''}`}
+            className={`tk-insp-tab ${activeTab === 'design-md' ? 'active' : ''}`}
             onClick={() => setActiveTab('design-md')}
           >
-            <FileText size={14} />
-            <span>DESIGN.md (AI Agent Spec)</span>
+            <FileText size={13} />
+            <span>DESIGN.md</span>
           </button>
 
           <button
-            className={`tk-modal-tab-btn ${activeTab === 'tailwind' ? 'active' : ''}`}
+            className={`tk-insp-tab ${activeTab === 'tailwind' ? 'active' : ''}`}
             onClick={() => setActiveTab('tailwind')}
           >
-            <Code2 size={14} />
+            <Code2 size={13} />
             <span>Tailwind Config</span>
           </button>
 
           <button
-            className={`tk-modal-tab-btn ${activeTab === 'css' ? 'active' : ''}`}
+            className={`tk-insp-tab ${activeTab === 'css' ? 'active' : ''}`}
             onClick={() => setActiveTab('css')}
           >
-            <Code2 size={14} />
+            <Code2 size={13} />
             <span>CSS Variables</span>
           </button>
 
           <button
-            className={`tk-modal-tab-btn ${activeTab === 'agent-rules' ? 'active' : ''}`}
+            className={`tk-insp-tab ${activeTab === 'agent-rules' ? 'active' : ''}`}
             onClick={() => setActiveTab('agent-rules')}
           >
-            <Terminal size={14} />
+            <Terminal size={13} />
             <span>AGENTS.md / CursorRules</span>
           </button>
         </div>
 
-        {/* Code Content Display */}
-        <div className="tk-modal-code-wrapper">
-          <pre className="tk-modal-code">
+        {/* Code Content Box */}
+        <div className="tk-code-inspector-box" style={{ borderRadius: '6px', border: '1px solid var(--border-hairline)' }}>
+          <div className="tk-code-topbar">
+            <span className="tk-code-filename">{filename}</span>
+            <button className="tk-btn-copy-code-snippet" onClick={handleCopy}>
+              {isCopied ? <Check size={13} color="#10b981" /> : <Copy size={13} />}
+              <span>{isCopied ? 'Copied to Clipboard!' : 'Copy Snippet'}</span>
+            </button>
+          </div>
+          <pre className="tk-code-snippet-pre" style={{ maxHeight: '380px' }}>
             <code>{codeContent}</code>
           </pre>
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="tk-modal-footer">
-          <span className="tk-modal-hint">
-            💡 Drop this <code>{filename}</code> directly into your project root for instant AI coding agent guidance.
+        <div className="tk-modal-sheet-footer">
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+            💡 Drop <code>{filename}</code> directly into your root workspace for AI coding agents.
           </span>
 
-          <div className="tk-modal-action-btns">
-            <button className="tk-btn-modal-copy" onClick={handleCopy}>
-              {isCopied ? <Check size={15} color="#10b981" /> : <Copy size={15} />}
-              <span>{isCopied ? 'Copied to Clipboard!' : 'Copy Code'}</span>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={handleCopy}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                background: 'var(--bg-surface-elevated)',
+                border: '1px solid var(--border-hairline)',
+                borderRadius: '4px',
+                color: 'var(--text-primary)',
+                fontSize: '13px',
+                cursor: 'pointer'
+              }}
+            >
+              {isCopied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+              <span>{isCopied ? 'Copied' : 'Copy All'}</span>
             </button>
 
-            <button className="tk-btn-modal-download" onClick={handleDownload}>
-              <Download size={15} />
+            <button
+              onClick={handleDownload}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                background: 'var(--accent-amber)',
+                color: '#120b02',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              <Download size={14} />
               <span>Download {filename}</span>
             </button>
           </div>
