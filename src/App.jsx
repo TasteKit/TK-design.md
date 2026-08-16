@@ -12,7 +12,7 @@ import { SystemDetailModal } from './components/SystemDetailModal';
 import { DESIGN_SYSTEMS } from './data/designSystems';
 
 export function App() {
-  // Load custom saved specs from localStorage
+  // LocalStorage persistence for custom created/imported specs
   const [customSystems, setCustomSystems] = useState(() => {
     try {
       const saved = localStorage.getItem('tastekit_custom_specs');
@@ -29,7 +29,7 @@ export function App() {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [detailModalSystem, setDetailModalSystem] = useState(null);
 
-  // URL Hash Deep Linking & History
+  // URL Hash Deep Linking
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#/, '');
@@ -60,7 +60,6 @@ export function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [systems]);
 
-  // Update hash on tab change
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     window.location.hash = tab;
@@ -100,13 +99,9 @@ export function App() {
     window.location.hash = `playground?id=${newSys.id}`;
   };
 
-  const handleImportSpec = (newSys) => {
-    handleSaveCustomSystem(newSys);
-  };
-
   return (
-    <div className="gd-app">
-      {/* Top Header & Announcement Banner */}
+    <div className="tk-app-root">
+      {/* Header & Top Banner */}
       <Header
         activeTab={activeTab}
         setActiveTab={handleTabChange}
@@ -115,124 +110,127 @@ export function App() {
         onOpenImportModal={() => setIsImportOpen(true)}
       />
 
-      {/* Main Split Grid (Sidebar 248px + Content minmax) */}
-      <div className="gd-layout-container">
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={handleTabChange}
-          totalSystems={systems.length}
-          selectedSystem={selectedSystem}
-          onOpenImportModal={() => setIsImportOpen(true)}
-        />
+      {/* Main Content Area */}
+      <main className="tk-main-body">
+        {activeTab === 'catalog' && (
+          <>
+            <Hero
+              onExploreCatalog={() => {
+                const el = document.getElementById('spec-matrix');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              onOpenStudio={() => handleTabChange('studio')}
+              totalSpecs={systems.length}
+            />
+            <Catalog
+              systems={systems}
+              selectedSystem={selectedSystem}
+              onSelectSystem={handleSelectSystem}
+              onLaunchPlayground={handleLaunchPlayground}
+              onOpenDetailModal={handleOpenDetailModal}
+            />
+          </>
+        )}
 
-        <main className="gd-main-content">
-          {activeTab === 'catalog' && (
-            <>
-              <Hero onBrowseCatalog={() => handleTabChange('catalog')} />
-              <Catalog
-                systems={systems}
-                selectedSystem={selectedSystem}
-                onSelectSystem={handleSelectSystem}
-                onLaunchPlayground={handleLaunchPlayground}
-                onOpenDetailModal={handleOpenDetailModal}
-              />
-            </>
-          )}
+        {activeTab === 'playground' && (
+          <div style={{ padding: '32px 40px' }}>
+            <Playground
+              system={selectedSystem}
+              systems={systems}
+              onSelectSystem={handleSelectSystem}
+              onOpenExport={() => setIsExportOpen(true)}
+            />
+          </div>
+        )}
 
-          {activeTab === 'playground' && (
-            <div className="gd-page-wrapper">
-              <Playground
-                system={selectedSystem}
-                systems={systems}
-                onSelectSystem={handleSelectSystem}
-                onOpenExport={() => setIsExportOpen(true)}
-              />
+        {activeTab === 'studio' && (
+          <div style={{ padding: '32px 40px' }}>
+            <Studio
+              currentSystem={selectedSystem}
+              onSaveCustomSystem={handleSaveCustomSystem}
+              onOpenExport={() => setIsExportOpen(true)}
+            />
+          </div>
+        )}
+
+        {activeTab === 'analyzer' && (
+          <div style={{ padding: '32px 40px' }}>
+            <UrlAnalyzer
+              onGenerateFromUrl={handleSaveCustomSystem}
+            />
+          </div>
+        )}
+      </main>
+
+      {/* Bespoke TasteKit Footer */}
+      <footer style={{ borderTop: '1px solid var(--border-hairline)', background: '#050608', padding: '48px 40px 64px', marginTop: 'auto' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img src="/tastekit-logo.jpg" alt="" style={{ width: '22px', height: '22px', borderRadius: '4px' }} />
+              <span style={{ fontWeight: '700', fontSize: '15px', color: '#fff' }}>Taste<span style={{ color: '#f5a623' }}>Kit</span></span>
             </div>
-          )}
-
-          {activeTab === 'studio' && (
-            <div className="gd-page-wrapper">
-              <Studio
-                currentSystem={selectedSystem}
-                onSaveCustomSystem={handleSaveCustomSystem}
-                onOpenExport={() => setIsExportOpen(true)}
-              />
-            </div>
-          )}
-
-          {activeTab === 'analyzer' && (
-            <div className="gd-page-wrapper">
-              <UrlAnalyzer
-                onGenerateFromUrl={handleSaveCustomSystem}
-              />
-            </div>
-          )}
-        </main>
-      </div>
-
-      {/* Footer */}
-      <footer className="gd-footer">
-        <div className="gd-footer-inner">
-          <div className="gd-footer-col brand">
-            <a href="/" className="gd-footer-logo">
-              taste<span className="gd-accent">kit</span>.md
-            </a>
-            <p className="gd-footer-tagline">
-              Design, build, launch and grow products with the AI you already use.
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.5', maxWidth: '300px' }}>
+              The open design system protocol and token compiler built to eliminate the AI taste gap.
             </p>
             <a
               href="https://github.com/TasteKit"
               target="_blank"
               rel="noopener noreferrer"
-              className="gd-footer-team"
+              style={{ fontSize: '12px', color: 'var(--text-secondary)' }}
             >
-              <img src="/tastekit-logo.jpg" alt="" className="gd-team-avatar" />
-              <span>Maintained by the TasteKit team</span>
+              Maintained by the TasteKit Organization ↗
             </a>
           </div>
 
-          <div className="gd-footer-col">
-            <span className="gd-footer-title">Products</span>
-            <div className="gd-footer-links">
-              <button onClick={() => handleTabChange('catalog')}>Website catalog ({systems.length}+)</button>
-              <button onClick={() => handleTabChange('studio')}>Private DESIGN.md</button>
-              <button onClick={() => handleTabChange('playground')}>Live Playground</button>
-              <button onClick={() => handleTabChange('analyzer')}>AI Token Extractor</button>
-              <button onClick={() => setIsImportOpen(true)}>Import Spec (.md / .json)</button>
-              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                Website Starter Kit ↗
-              </a>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+              Platform
+            </span>
+            <button onClick={() => handleTabChange('catalog')} style={{ background: 'none', border: 'none', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', padding: 0 }}>
+              Spec Matrix ({systems.length}+)
+            </button>
+            <button onClick={() => handleTabChange('playground')} style={{ background: 'none', border: 'none', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', padding: 0 }}>
+              Live Component Playground
+            </button>
+            <button onClick={() => handleTabChange('studio')} style={{ background: 'none', border: 'none', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', padding: 0 }}>
+              Custom Token Studio
+            </button>
+            <button onClick={() => handleTabChange('analyzer')} style={{ background: 'none', border: 'none', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '13px', cursor: 'pointer', padding: 0 }}>
+              AI Token Extractor
+            </button>
           </div>
 
-          <div className="gd-footer-col">
-            <span className="gd-footer-title">Resources</span>
-            <div className="gd-footer-links">
-              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                State of DESIGN.md
-              </a>
-              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                Google Stitch Spec v2.4
-              </a>
-              <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                GitHub Repository
-              </a>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+              Open Source
+            </span>
+            <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+              GitHub Repository
+            </a>
+            <a href="https://github.com/TasteKit" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+              TasteKit Organization
+            </a>
+            <a href="https://github.com/TasteKit/TK-design.md/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+              MIT License
+            </a>
           </div>
 
-          <div className="gd-footer-col">
-            <span className="gd-footer-title">Legal</span>
-            <div className="gd-footer-links">
-              <a href="https://github.com/TasteKit/TK-design.md/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">
-                MIT License
-              </a>
-              <span>© 2026 TasteKit. All rights reserved.</span>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+              CLI & Tools
+            </span>
+            <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#f5a623', background: '#0e1017', padding: '6px 10px', borderRadius: '4px', border: '1px solid var(--border-hairline)' }}>
+              npx tastekit add linear
+            </code>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              Works with Cursor, Claude Code, Antigravity, and Codex.
+            </span>
           </div>
         </div>
       </footer>
 
-      {/* Deep-Dive Detail Modal */}
+      {/* System Detail Spec Drawer */}
       {detailModalSystem && (
         <SystemDetailModal
           system={detailModalSystem}
@@ -241,7 +239,7 @@ export function App() {
         />
       )}
 
-      {/* Multi-Format Export Modal */}
+      {/* Export Multi-Format Modal */}
       {isExportOpen && (
         <ExportModal
           system={selectedSystem}
@@ -249,11 +247,11 @@ export function App() {
         />
       )}
 
-      {/* Spec Importer Modal */}
+      {/* Drag & Drop Spec Importer */}
       {isImportOpen && (
         <ImportModal
           onClose={() => setIsImportOpen(false)}
-          onImportSuccess={handleImportSpec}
+          onImportSuccess={handleSaveCustomSystem}
         />
       )}
     </div>

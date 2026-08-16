@@ -4,19 +4,17 @@ import {
   ArrowRight,
   Bookmark,
   Star,
-  ShieldAlert,
+  ShieldCheck,
   Eye,
   LayoutGrid,
   List,
-  Copy,
-  Check,
   Sparkles,
   SlidersHorizontal,
-  ChevronDown
+  FileCode2,
+  Terminal
 } from 'lucide-react';
 import { CATEGORIES } from '../data/designSystems';
 import { getSystemBrandLogo } from './BrandLogos';
-import confetti from 'canvas-confetti';
 
 export function Catalog({
   systems,
@@ -37,7 +35,7 @@ export function Catalog({
       return ['linear.app', 'claude', 'apple', 'stripe'];
     }
   });
-  const [copiedId, setCopiedId] = useState(null);
+
   const searchInputRef = useRef(null);
 
   // Keyboard shortcut '/' to search
@@ -63,14 +61,6 @@ export function Catalog({
     } catch {}
   };
 
-  const handleQuickCopy = (e, sys) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(`npx tastekit add ${sys.id}`);
-    setCopiedId(sys.id);
-    confetti({ particleCount: 20, spread: 40, origin: { y: 0.7 } });
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
   // Filter & Sort
   const filteredSystems = systems
     .filter((sys) => {
@@ -89,42 +79,42 @@ export function Catalog({
       if (sortBy === 'installs') return parseFloat(b.downloads) - parseFloat(a.downloads);
       if (sortBy === 'bookmarks') return b.stars - a.stars;
       if (sortBy === 'name') return a.name.localeCompare(b.name);
-      return 0; // featured order
+      return 0;
     });
 
   return (
-    <div className="gd-catalog-section" id="catalog-section">
-      {/* Search Bar & Shortcuts matching getdesign.md */}
-      <div className="gd-search-container">
-        <div className="gd-search-box">
-          <Search size={15} className="gd-search-icon" />
+    <div className="tk-catalog-section" id="spec-matrix">
+      {/* Search Bar & Filter Controls */}
+      <div className="tk-search-toolbar">
+        <div className="tk-search-box">
+          <Search size={16} className="tk-search-icon" />
           <input
             ref={searchInputRef}
             type="search"
             autoComplete="off"
-            placeholder="Search all designs... (Press '/' to focus)"
+            placeholder="Search 75+ specs by brand, category, or aesthetic (Press '/' to focus)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="gd-search-input"
+            className="tk-search-input"
           />
           {searchQuery && (
-            <button className="gd-search-clear" onClick={() => setSearchQuery('')}>
+            <button className="tk-search-clear" onClick={() => setSearchQuery('')}>
               ✕
             </button>
           )}
         </div>
 
-        {/* Category Filter Pills & Controls */}
-        <div className="gd-controls-row">
-          <div className="gd-categories-scroll">
+        {/* Categories & View Switcher */}
+        <div className="tk-filter-row">
+          <div className="tk-categories-list">
             <button
-              className={`gd-cat-chip ${activeCategory === 'All' ? 'active' : ''}`}
+              className={`tk-cat-btn ${activeCategory === 'All' ? 'active' : ''}`}
               onClick={() => setActiveCategory('All')}
             >
-              All ({systems.length})
+              All Specs ({systems.length})
             </button>
             <button
-              className={`gd-cat-chip ${activeCategory === 'Bookmarked' ? 'active' : ''}`}
+              className={`tk-cat-btn ${activeCategory === 'Bookmarked' ? 'active' : ''}`}
               onClick={() => setActiveCategory('Bookmarked')}
             >
               ★ Saved ({bookmarkedIds.length})
@@ -132,7 +122,7 @@ export function Catalog({
             {CATEGORIES.filter((c) => c !== 'All').map((cat) => (
               <button
                 key={cat}
-                className={`gd-cat-chip ${activeCategory === cat ? 'active' : ''}`}
+                className={`tk-cat-btn ${activeCategory === cat ? 'active' : ''}`}
                 onClick={() => setActiveCategory(cat)}
               >
                 {cat}
@@ -140,142 +130,145 @@ export function Catalog({
             ))}
           </div>
 
-          <div className="gd-view-toggle">
+          <div className="tk-view-mode-toggle">
             <button
-              className={`gd-view-btn ${viewMode === 'table' ? 'active' : ''}`}
+              className={`tk-vm-btn ${viewMode === 'table' ? 'active' : ''}`}
               onClick={() => setViewMode('table')}
-              title="Table View"
+              title="Dense Table Matrix"
             >
-              <List size={13} />
+              <List size={14} />
             </button>
             <button
-              className={`gd-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              className={`tk-vm-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
-              title="Grid View"
+              title="Visual Card Grid"
             >
-              <LayoutGrid size={13} />
+              <LayoutGrid size={14} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Table View (Matching getdesign.md catalog table) */}
+      {/* Dense Matrix Table View */}
       {viewMode === 'table' && (
-        <div className="gd-table-container">
-          <div className="gd-table-head">
-            <span className="gd-th-num">#</span>
-            <span className="gd-th-brand">Design Systems Analysis</span>
-            <span className="gd-th-category">Category</span>
-            <span className="gd-th-palette">Palette</span>
-            <span
-              className="gd-th-installs clickable"
-              onClick={() => setSortBy(sortBy === 'installs' ? 'featured' : 'installs')}
-              title="Click to sort by installs"
-            >
-              Installs {sortBy === 'installs' && '↓'}
-            </span>
-            <span
-              className="gd-th-bookmarked clickable"
-              onClick={() => setSortBy(sortBy === 'bookmarks' ? 'featured' : 'bookmarks')}
-              title="Click to sort by bookmarks"
-            >
-              Bookmarked {sortBy === 'bookmarks' && '↓'}
-            </span>
-            <span className="gd-th-action">Action</span>
-          </div>
-
-          <div className="gd-table-body">
-            {filteredSystems.map((sys, idx) => {
-              const isSaved = bookmarkedIds.includes(sys.id);
-              const isCopied = copiedId === sys.id;
-
-              return (
-                <div
-                  key={sys.id}
-                  className="gd-table-row"
-                  onClick={() => onOpenDetailModal(sys)}
+        <div className="tk-matrix-wrapper">
+          <table className="tk-matrix-table">
+            <thead>
+              <tr>
+                <th style={{ width: '40px' }}>#</th>
+                <th>Design System & Specification</th>
+                <th>Archetype</th>
+                <th>Token Swatches</th>
+                <th
+                  className="clickable"
+                  onClick={() => setSortBy(sortBy === 'installs' ? 'featured' : 'installs')}
+                  title="Sort by Installs"
                 >
-                  {/* Row Number */}
-                  <span className="gd-td-num">{idx + 1}</span>
+                  Downloads {sortBy === 'installs' && '↓'}
+                </th>
+                <th
+                  className="clickable"
+                  onClick={() => setSortBy(sortBy === 'bookmarks' ? 'featured' : 'bookmarks')}
+                  title="Sort by Bookmarks"
+                >
+                  Saved {sortBy === 'bookmarks' && '↓'}
+                </th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSystems.map((sys, idx) => {
+                const isSaved = bookmarkedIds.includes(sys.id);
 
-                  {/* Brand Column */}
-                  <div className="gd-td-brand">
-                    <span className="gd-brand-logo-frame">
-                      {getSystemBrandLogo(sys.id, 18)}
-                    </span>
-                    <div className="gd-brand-info">
-                      <span className="gd-brand-name">{sys.name}</span>
-                      <span className="gd-brand-tagline">{sys.tagline}</span>
-                    </div>
-                  </div>
+                return (
+                  <tr
+                    key={sys.id}
+                    onClick={() => onOpenDetailModal(sys)}
+                  >
+                    <td className="tk-td-num">{idx + 1}</td>
 
-                  {/* Category Pill */}
-                  <div className="gd-td-category">
-                    <span className="gd-cat-badge">{sys.category}</span>
-                  </div>
+                    <td className="tk-td-brand">
+                      <div className="tk-td-brand-inner">
+                        <span className="tk-td-logo">
+                          {getSystemBrandLogo(sys.id, 18)}
+                        </span>
+                        <div className="tk-td-brand-text">
+                          <span className="tk-brand-title-bold">{sys.name}</span>
+                          <span className="tk-brand-sub-tagline">{sys.tagline}</span>
+                        </div>
+                      </div>
+                    </td>
 
-                  {/* Palette Swatches */}
-                  <div className="gd-td-palette">
-                    <span className="gd-swatch" style={{ background: sys.tokens.bg }} title={`BG: ${sys.tokens.bg}`}></span>
-                    <span className="gd-swatch" style={{ background: sys.tokens.surface }} title={`Surface: ${sys.tokens.surface}`}></span>
-                    <span className="gd-swatch" style={{ background: sys.tokens.primary }} title={`Primary: ${sys.tokens.primary}`}></span>
-                    <span className="gd-swatch" style={{ background: sys.tokens.accent }} title={`Accent: ${sys.tokens.accent}`}></span>
-                  </div>
+                    <td>
+                      <span className="tk-category-chip">{sys.category}</span>
+                    </td>
 
-                  {/* Installs */}
-                  <span className="gd-td-installs">{sys.downloads}</span>
+                    <td>
+                      <div className="tk-swatches-strip">
+                        <span className="tk-swatch-dot" style={{ background: sys.tokens.bg }} title={`BG: ${sys.tokens.bg}`} />
+                        <span className="tk-swatch-dot" style={{ background: sys.tokens.surface }} title={`Surface: ${sys.tokens.surface}`} />
+                        <span className="tk-swatch-dot" style={{ background: sys.tokens.primary }} title={`Primary: ${sys.tokens.primary}`} />
+                        <span className="tk-swatch-dot" style={{ background: sys.tokens.accent }} title={`Accent: ${sys.tokens.accent}`} />
+                      </div>
+                    </td>
 
-                  {/* Bookmarked Counter + Star Toggle */}
-                  <div className="gd-td-bookmarked" onClick={(e) => toggleBookmark(e, sys.id)}>
-                    <Star
-                      size={12}
-                      fill={isSaved ? '#f5a623' : 'none'}
-                      color={isSaved ? '#f5a623' : '#666'}
-                      className="cursor-pointer"
-                    />
-                    <span>{sys.stars + (isSaved ? 1 : 0)}</span>
-                  </div>
+                    <td className="tk-td-mono">{sys.downloads}</td>
 
-                  {/* Action Quick Trigger */}
-                  <div className="gd-td-action">
-                    <button
-                      className="gd-row-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenDetailModal(sys);
-                      }}
-                    >
-                      <span>View Spec</span>
-                      <ArrowRight size={11} />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                    <td>
+                      <div
+                        className="tk-td-save-cell"
+                        onClick={(e) => toggleBookmark(e, sys.id)}
+                        title={isSaved ? 'Bookmarked' : 'Save Spec'}
+                      >
+                        <Star
+                          size={13}
+                          fill={isSaved ? '#f5a623' : 'none'}
+                          color={isSaved ? '#f5a623' : '#666'}
+                        />
+                        <span>{sys.stars + (isSaved ? 1 : 0)}</span>
+                      </div>
+                    </td>
+
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        className="tk-btn-matrix-action"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenDetailModal(sys);
+                        }}
+                      >
+                        <span>Inspect Spec</span>
+                        <ArrowRight size={12} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
-      {/* Alternative Visual Grid */}
+      {/* Visual Card Grid View */}
       {viewMode === 'grid' && (
-        <div className="gd-grid-container">
+        <div className="tk-grid-layout">
           {filteredSystems.map((sys) => {
             const isSaved = bookmarkedIds.includes(sys.id);
+
             return (
               <div
                 key={sys.id}
-                className="gd-grid-card"
+                className="tk-card-item"
                 onClick={() => onOpenDetailModal(sys)}
               >
-                <div className="gd-card-top">
-                  <div className="gd-card-brand-box">
-                    <span className="gd-card-icon">{getSystemBrandLogo(sys.id, 18)}</span>
-                    <span className="gd-card-name">{sys.name}</span>
+                <div className="tk-card-header-row">
+                  <div className="tk-card-brand-box">
+                    <span className="tk-card-brand-icon">{getSystemBrandLogo(sys.id, 20)}</span>
+                    <span className="tk-card-brand-name">{sys.name}</span>
                   </div>
                   <button
-                    className="gd-card-save-btn"
+                    className="tk-card-star-btn"
                     onClick={(e) => toggleBookmark(e, sys.id)}
-                    title={isSaved ? 'Remove Bookmark' : 'Bookmark Spec'}
                   >
                     <Star
                       size={14}
@@ -285,27 +278,26 @@ export function Catalog({
                   </button>
                 </div>
 
-                <p className="gd-card-desc">{sys.tagline}</p>
+                <p className="tk-card-description">{sys.tagline}</p>
 
-                <div className="gd-card-swatches">
-                  <span style={{ background: sys.tokens.bg }}></span>
-                  <span style={{ background: sys.tokens.surface }}></span>
-                  <span style={{ background: sys.tokens.primary }}></span>
-                  <span style={{ background: sys.tokens.accent }}></span>
+                <div className="tk-card-swatches-row">
+                  <span style={{ background: sys.tokens.bg }} />
+                  <span style={{ background: sys.tokens.surface }} />
+                  <span style={{ background: sys.tokens.primary }} />
+                  <span style={{ background: sys.tokens.accent }} />
                 </div>
 
-                <div className="gd-card-footer">
-                  <span className="gd-card-stat">
-                    {sys.downloads} installs • WCAG AA
-                  </span>
+                <div className="tk-card-footer-row">
+                  <span className="tk-card-category-badge">{sys.category}</span>
                   <button
-                    className="gd-card-btn"
+                    className="tk-btn-card-launch"
                     onClick={(e) => {
                       e.stopPropagation();
                       onOpenDetailModal(sys);
                     }}
                   >
-                    Inspect Spec →
+                    <span>Inspect</span>
+                    <ArrowRight size={12} />
                   </button>
                 </div>
               </div>
@@ -315,9 +307,9 @@ export function Catalog({
       )}
 
       {filteredSystems.length === 0 && (
-        <div className="gd-empty-state">
-          <p>No design systems found matching "{searchQuery}".</p>
-          <button className="gd-btn-reset" onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}>
+        <div className="tk-empty-notice">
+          <p>No specifications found matching "{searchQuery}".</p>
+          <button className="tk-btn-reset" onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}>
             Reset Filters
           </button>
         </div>
