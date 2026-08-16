@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   Code2,
@@ -16,6 +16,22 @@ import { GithubIcon } from './Icons';
 
 export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExport, onOpenImportModal }) {
   const [showBanner, setShowBanner] = useState(true);
+  const [starCount, setStarCount] = useState(null);
+
+  // Fetch real-time live GitHub stars from TasteKit repository
+  useEffect(() => {
+    fetch('https://api.github.com/repos/TasteKit/TK-design.md')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data.stargazers_count === 'number') {
+          const count = data.stargazers_count;
+          setStarCount(count >= 1000 ? `${(count / 1000).toFixed(1)}k` : `${count}`);
+        }
+      })
+      .catch(() => {
+        setStarCount(null);
+      });
+  }, []);
 
   return (
     <>
@@ -125,12 +141,12 @@ export function Header({ activeTab, setActiveTab, totalSystems = 75, onOpenExpor
               target="_blank"
               rel="noopener noreferrer"
               className="tk-btn-github-pill"
-              title="TasteKit on GitHub"
+              title="Star TasteKit on GitHub"
             >
               <GithubIcon size={14} />
               <div className="tk-gh-stars">
                 <Star size={11} fill="#f5a623" color="#f5a623" />
-                <span>1.4k</span>
+                <span>{starCount !== null ? starCount : 'Star'}</span>
               </div>
             </a>
           </div>
