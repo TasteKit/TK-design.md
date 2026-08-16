@@ -1,14 +1,30 @@
 {
-  "name": "blissful-nobel",
-  "private": true,
-  "version": "0.0.0",
+  "name": "tastekit",
+  "version": "1.0.0",
+  "description": "The open DESIGN.md specification engine and token compiler for AI coding agents",
   "type": "module",
+  "bin": {
+    "tastekit": "./bin/cli.js"
+  },
+  "main": "./bin/cli.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
+  "keywords": [
+    "tastekit",
+    "design-md",
+    "design-tokens",
+    "cursorrules",
+    "claude-code",
+    "ai-agents",
+    "antigravity",
+    "ui-design"
+  ],
+  "author": "TasteKit",
+  "license": "MIT",
   "dependencies": {
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.31.0",
