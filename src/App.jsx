@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { Catalog } from './components/Catalog';
 import { Playground } from './components/Playground';
 import { Studio } from './components/Studio';
 import { UrlAnalyzer } from './components/UrlAnalyzer';
 import { ExportModal } from './components/ExportModal';
+import { SystemDetailModal } from './components/SystemDetailModal';
 import { DESIGN_SYSTEMS } from './data/designSystems';
 
 export function App() {
@@ -12,6 +14,7 @@ export function App() {
   const [selectedSystem, setSelectedSystem] = useState(DESIGN_SYSTEMS[0]);
   const [activeTab, setActiveTab] = useState('catalog'); // 'catalog' | 'playground' | 'studio' | 'analyzer'
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [detailModalSystem, setDetailModalSystem] = useState(null);
 
   const handleSelectSystem = (sys) => {
     setSelectedSystem(sys);
@@ -20,6 +23,11 @@ export function App() {
   const handleLaunchPlayground = (sys) => {
     setSelectedSystem(sys);
     setActiveTab('playground');
+  };
+
+  const handleOpenDetailModal = (sys) => {
+    setSelectedSystem(sys);
+    setDetailModalSystem(sys);
   };
 
   const handleSaveCustomSystem = (newSys) => {
@@ -36,7 +44,7 @@ export function App() {
 
   return (
     <div className="tk-app">
-      {/* Top Header */}
+      {/* Top Header & Announcement Banner */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -45,41 +53,51 @@ export function App() {
         onOpenExport={() => setIsExportOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <main className="tk-main-container">
-        {activeTab === 'catalog' && (
-          <Catalog
-            systems={systems}
-            selectedSystem={selectedSystem}
-            onSelectSystem={handleSelectSystem}
-            onLaunchPlayground={handleLaunchPlayground}
-            onOpenExport={() => setIsExportOpen(true)}
-          />
-        )}
+      {/* Main Body Grid: Sidebar + Main Content */}
+      <div className="tk-layout-grid">
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          totalSystems={systems.length}
+          selectedSystem={selectedSystem}
+        />
 
-        {activeTab === 'playground' && (
-          <Playground
-            system={selectedSystem}
-            systems={systems}
-            onSelectSystem={handleSelectSystem}
-            onOpenExport={() => setIsExportOpen(true)}
-          />
-        )}
+        <main className="tk-main-container">
+          {activeTab === 'catalog' && (
+            <Catalog
+              systems={systems}
+              selectedSystem={selectedSystem}
+              onSelectSystem={handleSelectSystem}
+              onLaunchPlayground={handleLaunchPlayground}
+              onOpenExport={() => setIsExportOpen(true)}
+              onOpenDetailModal={handleOpenDetailModal}
+            />
+          )}
 
-        {activeTab === 'studio' && (
-          <Studio
-            currentSystem={selectedSystem}
-            onSaveCustomSystem={handleSaveCustomSystem}
-            onOpenExport={() => setIsExportOpen(true)}
-          />
-        )}
+          {activeTab === 'playground' && (
+            <Playground
+              system={selectedSystem}
+              systems={systems}
+              onSelectSystem={handleSelectSystem}
+              onOpenExport={() => setIsExportOpen(true)}
+            />
+          )}
 
-        {activeTab === 'analyzer' && (
-          <UrlAnalyzer
-            onGenerateFromUrl={handleGenerateFromUrl}
-          />
-        )}
-      </main>
+          {activeTab === 'studio' && (
+            <Studio
+              currentSystem={selectedSystem}
+              onSaveCustomSystem={handleSaveCustomSystem}
+              onOpenExport={() => setIsExportOpen(true)}
+            />
+          )}
+
+          {activeTab === 'analyzer' && (
+            <UrlAnalyzer
+              onGenerateFromUrl={handleGenerateFromUrl}
+            />
+          )}
+        </main>
+      </div>
 
       {/* Footer */}
       <footer className="tk-footer">
@@ -127,6 +145,15 @@ export function App() {
           <span>© 2026 TasteKit. All rights reserved.</span>
         </div>
       </footer>
+
+      {/* Deep-Dive Detail Modal */}
+      {detailModalSystem && (
+        <SystemDetailModal
+          system={detailModalSystem}
+          onClose={() => setDetailModalSystem(null)}
+          onLaunchPlayground={handleLaunchPlayground}
+        />
+      )}
 
       {/* Export Modal */}
       {isExportOpen && (

@@ -11,7 +11,9 @@ import {
   LayoutGrid,
   List,
   SlidersHorizontal,
-  ExternalLink
+  ExternalLink,
+  Terminal,
+  FileCode2
 } from 'lucide-react';
 import { CATEGORIES } from '../data/designSystems';
 import { getSystemBrandLogo } from './BrandLogos';
@@ -21,7 +23,8 @@ export function Catalog({
   selectedSystem,
   onSelectSystem,
   onLaunchPlayground,
-  onOpenExport
+  onOpenExport,
+  onOpenDetailModal
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -39,16 +42,16 @@ export function Catalog({
 
   return (
     <div className="tk-catalog-section">
-      {/* Brand Strip */}
+      {/* Brand Strip Bar */}
       <div className="tk-brand-strip">
-        <span className="tk-brand-strip-label">Pre-analyzed Brands & Specs:</span>
+        <span className="tk-brand-strip-label">75+ Brands & Specs:</span>
         <div className="tk-brand-strip-logos">
-          {systems.slice(0, 8).map((sys) => (
+          {systems.slice(0, 10).map((sys) => (
             <div
               key={sys.id}
               className="tk-brand-pill"
-              onClick={() => onLaunchPlayground(sys)}
-              title={`Test ${sys.name} Spec`}
+              onClick={() => onOpenDetailModal(sys)}
+              title={`Inspect ${sys.name} Spec`}
             >
               <span className="tk-brand-pill-icon">{getSystemBrandLogo(sys.id, 14)}</span>
               <span>{sys.name}</span>
@@ -62,20 +65,20 @@ export function Catalog({
         <div className="tk-hero-content">
           <div className="tk-hero-badge">
             <span className="tk-hero-dot"></span>
-            TasteKit Open Spec v2.4 • Eliminating The AI Taste Gap
+            TasteKit Spec Ecosystem v2.4 • Eliminating The AI Taste Gap
           </div>
           <h1 className="tk-hero-headline">
-            Standardized <span className="tk-gradient-text">DESIGN.md</span> blueprints for AI coding agents.
+            Give AI-built websites a real design with <span className="tk-gradient-text">DESIGN.md</span>
           </h1>
           <p className="tk-hero-desc">
-            Give Antigravity, Claude Code, Cursor, and Codex deep visual intelligence.
-            Choose a verified design profile, inspect live components, and export instant agent instructions.
+            Give your coding agent a reusable design reference: colors, type, spacing, components, and the reasoning behind them.
+            So every new page follows a specific visual language, not the same generic AI layout.
           </p>
 
           <div className="tk-hero-stats">
             <div className="tk-hero-stat-item">
               <span className="tk-hero-stat-num">{systems.length}</span>
-              <span className="tk-hero-stat-label">Verified Specs</span>
+              <span className="tk-hero-stat-label">Production Specs</span>
             </div>
             <div className="tk-hero-stat-divider"></div>
             <div className="tk-hero-stat-item">
@@ -97,7 +100,7 @@ export function Catalog({
           <Search size={16} className="tk-search-icon" />
           <input
             type="text"
-            placeholder="Search systems by brand, vibe, or aesthetic (e.g. Linear, Stripe, Apple)..."
+            placeholder="Search 75+ designs by brand, keyword, or aesthetic (e.g. Linear, Stripe, Apple, Dark Obsidian)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="tk-search-input"
@@ -150,7 +153,7 @@ export function Catalog({
               <div
                 key={sys.id}
                 className={`tk-system-card ${isSelected ? 'selected' : ''}`}
-                onClick={() => onSelectSystem(sys)}
+                onClick={() => onOpenDetailModal(sys)}
               >
                 {/* Card Top Header */}
                 <div className="tk-card-header">
@@ -226,19 +229,18 @@ export function Catalog({
                     }}
                   >
                     <Eye size={14} />
-                    <span>Test in Live Playground</span>
+                    <span>Live Playground</span>
                   </button>
 
                   <button
                     className="tk-btn-card-export"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSelectSystem(sys);
-                      onOpenExport();
+                      onOpenDetailModal(sys);
                     }}
-                    title="Export DESIGN.md & Code Tokens"
+                    title="Deep-Dive Spec Analysis"
                   >
-                    <Download size={14} />
+                    <FileCode2 size={15} />
                   </button>
                 </div>
               </div>
@@ -264,7 +266,7 @@ export function Catalog({
             </thead>
             <tbody>
               {filteredSystems.map((sys) => (
-                <tr key={sys.id} onClick={() => onSelectSystem(sys)}>
+                <tr key={sys.id} onClick={() => onOpenDetailModal(sys)}>
                   <td className="tk-table-brand-cell">
                     <span className="tk-table-brand-icon">{getSystemBrandLogo(sys.id, 16)}</span>
                     <div>
@@ -300,7 +302,7 @@ export function Catalog({
                         onLaunchPlayground(sys);
                       }}
                     >
-                      <span>Live Test</span>
+                      <span>Playground</span>
                       <ArrowRight size={13} />
                     </button>
                   </td>
