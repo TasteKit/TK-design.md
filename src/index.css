@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TasteKit Core Design System — Vanilla CSS Architecture
+   TasteKit Core Design System — Minimalist Vanilla CSS Architecture
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap');
@@ -101,7 +101,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(9, 10, 13, 0.82);
+  background: rgba(9, 10, 13, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-subtle);
@@ -292,8 +292,64 @@ a {
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 32px 24px 64px;
+  padding: 28px 24px 64px;
   flex: 1;
+}
+
+/* Brand Strip */
+.tk-brand-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.tk-brand-strip-label {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.tk-brand-strip-logos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tk-brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.tk-brand-pill:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.tk-brand-pill-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
 }
 
 /* Hero Cards */
@@ -302,8 +358,8 @@ a {
   background: linear-gradient(180deg, var(--surface-card) 0%, rgba(17, 19, 24, 0.5) 100%);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 36px 32px;
-  margin-bottom: 32px;
+  padding: 34px 32px;
+  margin-bottom: 28px;
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
@@ -331,7 +387,7 @@ a {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .tk-hero-dot {
@@ -343,9 +399,9 @@ a {
 }
 
 .tk-hero-headline {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 700;
-  line-height: 1.18;
+  line-height: 1.2;
   letter-spacing: -0.03em;
   color: var(--text-primary);
   max-width: 780px;
@@ -360,11 +416,11 @@ a {
 }
 
 .tk-hero-desc {
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.6;
   color: var(--text-muted);
   max-width: 740px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .tk-hero-stats {
@@ -403,8 +459,8 @@ a {
 .tk-controls-bar {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 28px;
+  gap: 14px;
+  margin-bottom: 24px;
 }
 
 .tk-search-wrapper {
@@ -450,12 +506,20 @@ a {
   font-size: 12px;
 }
 
+.tk-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .tk-categories-pills {
   display: flex;
   align-items: center;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .tk-cat-pill {
@@ -480,6 +544,29 @@ a {
   background: var(--surface-active);
   color: var(--text-primary);
   border-color: var(--border-strong);
+}
+
+.tk-view-toggle {
+  display: flex;
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.tk-view-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.tk-view-btn.active {
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 /* Systems Grid */
@@ -528,7 +615,14 @@ a {
 .tk-card-meta-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.tk-card-logo-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
 }
 
 .tk-card-category {
@@ -692,8 +786,122 @@ a {
   border-color: var(--border-strong);
 }
 
+/* Dense Table View */
+.tk-dense-table-wrapper {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+.tk-dense-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.tk-dense-table th {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-subtle);
+}
+
+.tk-dense-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+
+.tk-dense-table tr:hover td {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.tk-table-brand-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tk-table-brand-icon {
+  color: var(--text-primary);
+}
+
+.tk-table-brand-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tk-table-brand-vibe {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.tk-table-category-tag {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  background: var(--bg-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+}
+
+.tk-table-swatches {
+  display: flex;
+  gap: 4px;
+}
+
+.tk-table-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.tk-table-mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.tk-table-rule {
+  font-size: 12px;
+  color: #f87171;
+}
+
+.tk-btn-table-test {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.tk-btn-table-test:hover {
+  background: var(--brand-primary);
+  color: var(--brand-primary-fg);
+  border-color: transparent;
+}
+
+.text-right {
+  text-align: right;
+}
+
 /* ==========================================================================
-   Playground Styles
+   Playground & Primitives Styles
    ========================================================================== */
 
 .tk-playground-wrapper {
@@ -720,10 +928,10 @@ a {
   gap: 10px;
 }
 
-.tk-play-lbl {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
+.tk-play-brand-icon {
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
 }
 
 .tk-play-select {
@@ -738,13 +946,52 @@ a {
   cursor: pointer;
 }
 
-.tk-play-vibe-tag {
+.tk-contrast-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   font-family: var(--font-mono);
-  color: var(--brand-primary);
-  background: rgba(245, 166, 35, 0.1);
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
   padding: 3px 8px;
   border-radius: var(--radius-sm);
+}
+
+.tk-contrast-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.tk-play-subview-toggle {
+  display: flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.tk-subview-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.tk-subview-btn.active {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .tk-play-controls-center {
@@ -788,8 +1035,8 @@ a {
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 12.5px;
+  padding: 6px 10px;
+  font-size: 12px;
   color: var(--text-primary);
   cursor: pointer;
 }
@@ -885,11 +1132,10 @@ a {
   gap: 8px;
 }
 
-.tk-sim-brand-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--canvas-radius-sm);
-  background: var(--canvas-primary);
+.tk-sim-brand-icon {
+  color: var(--canvas-primary);
+  display: flex;
+  align-items: center;
 }
 
 .tk-sim-brand-name {
@@ -1195,6 +1441,88 @@ a {
 .tk-sim-tag-pill.accent {
   border-color: var(--canvas-accent);
   color: var(--canvas-accent);
+}
+
+/* UI Primitives Gallery */
+.tk-primitives-gallery {
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tk-primitives-header {
+  margin-bottom: 4px;
+}
+
+.tk-primitives-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.tk-primitives-desc {
+  font-size: 13.5px;
+  color: var(--canvas-text-muted);
+}
+
+.tk-primitives-desc code {
+  font-family: var(--canvas-font-mono);
+  color: var(--canvas-primary);
+}
+
+.tk-primitives-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.tk-prim-card {
+  background: var(--canvas-surface);
+  border: 1px solid var(--canvas-border);
+  border-radius: var(--canvas-radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tk-prim-card.full-width {
+  grid-column: span 2;
+}
+
+.tk-prim-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tk-prim-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--canvas-bg);
+  border: 1px solid var(--canvas-border);
+  padding: 4px 8px;
+  border-radius: var(--canvas-radius-sm);
+  font-size: 11px;
+  color: var(--canvas-text-muted);
+  cursor: pointer;
+}
+
+.tk-prim-copy-btn:hover {
+  color: var(--canvas-text);
+  border-color: var(--canvas-primary);
+}
+
+.tk-prim-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 /* Toast */
@@ -1996,6 +2324,12 @@ a {
   }
   .tk-preview-sticky {
     position: static;
+  }
+  .tk-primitives-grid {
+    grid-template-columns: 1fr;
+  }
+  .tk-prim-card.full-width {
+    grid-column: span 1;
   }
 }
 
