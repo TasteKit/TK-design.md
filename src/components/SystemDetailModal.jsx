@@ -33,7 +33,7 @@ export function SystemDetailModal({ system, onClose, onLaunchPlayground }) {
 
   const tokens = system.tokens;
   const contrast = calculateContrast(tokens.text, tokens.bg);
-  const npxCommand = `npx tastekit add ${system.id}`;
+  const npxCommand = `npx tastekit-cli add ${system.id}`;
 
   const handleCopyCmd = () => {
     navigator.clipboard.writeText(npxCommand);

@@ -221,7 +221,7 @@ export function App() {
               CLI & Tools
             </span>
             <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: '#f5a623', background: '#0e1017', padding: '6px 10px', borderRadius: '4px', border: '1px solid var(--border-hairline)' }}>
-              npx tastekit add linear
+              npx tastekit-cli add linear
             </code>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
               Works with Cursor, Claude Code, Antigravity, and Codex.

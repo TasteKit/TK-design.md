@@ -1,12 +1,19 @@
 {
-  "name": "tastekit",
+  "name": "tastekit-cli",
   "version": "1.0.0",
   "description": "The open DESIGN.md specification engine and token compiler for AI coding agents",
   "type": "module",
   "bin": {
-    "tastekit": "./bin/cli.js"
+    "tastekit": "./bin/cli.js",
+    "tastekit-cli": "./bin/cli.js"
   },
   "main": "./bin/cli.js",
+  "files": [
+    "bin",
+    "design-specs",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -25,6 +32,10 @@
   ],
   "author": "TasteKit",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TasteKit/TK-design.md.git"
+  },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.31.0",

@@ -98,7 +98,7 @@ export function Sidebar({ activeTab, setActiveTab, totalSystems, selectedSystem,
           </div>
           <h4 className="tk-cli-card-title">Sync Specs in 1 Command</h4>
           <div className="tk-cli-card-code">
-            <code>npx tastekit add linear</code>
+            <code>npx tastekit-cli add linear</code>
           </div>
           <p className="tk-cli-card-desc">
             Instantly embeds <code>DESIGN.md</code> tokens into your coding agent workspace.

@@ -271,7 +271,7 @@ export function Playground({ system, systems, onSelectSystem, onOpenExport }) {
                     <input
                       type="text"
                       readOnly
-                      value={`npx tastekit add ${system.id}`}
+                      value={`npx tastekit-cli add ${system.id}`}
                       className="tk-sim-input"
                     />
                     <button className="tk-sim-input-btn" onClick={handleCopyCursorRules}>

@@ -1,0 +1,8 @@
+src/
+public/
+dist/
+scripts/
+.github/
+.oxlintrc.json
+index.html
+vite.config.js

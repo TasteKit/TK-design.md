@@ -180,12 +180,12 @@ export function Hero({ onExploreCatalog, onOpenStudio, totalSpecs = 75 }) {
             <div className="tk-engine-footer">
               <div className="tk-npx-strip">
                 <span className="tk-npx-prompt">$</span>
-                <code className="tk-npx-code">npx tastekit add linear</code>
+                <code className="tk-npx-code">npx tastekit-cli add linear</code>
               </div>
               <button
                 className="tk-btn-npx-copy"
                 onClick={() => {
-                  navigator.clipboard.writeText('npx tastekit add linear');
+                  navigator.clipboard.writeText('npx tastekit-cli add linear');
                 }}
               >
                 Copy
