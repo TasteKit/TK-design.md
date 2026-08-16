@@ -41,6 +41,7 @@ export function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         selectedSystem={selectedSystem}
+        totalSystems={systems.length}
         onOpenExport={() => setIsExportOpen(true)}
       />
 
@@ -91,7 +92,7 @@ export function App() {
             </div>
             <p className="tk-footer-desc">
               Independent design systems analysis and interactive spec engine for AI coding agents.
-              Eliminating the AI taste gap.
+              Eliminating the AI taste gap with {systems.length}+ open-source specs.
             </p>
           </div>
 
@@ -99,7 +100,7 @@ export function App() {
             <div className="tk-footer-col">
               <span className="tk-footer-col-title">Ecosystem</span>
               <a href="https://github.com/TasteKit/TK-design.md" target="_blank" rel="noopener noreferrer">
-                TK-design.md
+                TK-design.md ({systems.length} Specs)
               </a>
               <button onClick={() => setActiveTab('catalog')}>Catalog</button>
               <button onClick={() => setActiveTab('playground')}>Live Playground</button>

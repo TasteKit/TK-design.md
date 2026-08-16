@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Code2, Layers, Cpu, ExternalLink, Sliders } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
-export function Header({ activeTab, setActiveTab, selectedSystem, onOpenExport }) {
+export function Header({ activeTab, setActiveTab, selectedSystem, totalSystems = 75, onOpenExport }) {
   return (
     <header className="tk-header">
       <div className="tk-header-inner">
@@ -28,7 +28,7 @@ export function Header({ activeTab, setActiveTab, selectedSystem, onOpenExport }
           >
             <Layers size={15} />
             <span>Catalog</span>
-            <span className="tk-nav-count">10</span>
+            <span className="tk-nav-count">{totalSystems}</span>
           </button>
 
           <button
